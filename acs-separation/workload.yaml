@@ -1,0 +1,31 @@
+apiVersion: carto.run/v1alpha1
+kind: Workload
+metadata:
+  annotations:
+    autoscaling.knative.dev/min-scale: "1"
+  labels:
+    apps.tanzu.vmware.com/workload-type: web
+  name: acs-seperation-wkld
+  namespace: tap-app-config-properties
+spec:
+  env:
+  - name: SPRING_CONFIG_IMPORT
+    value: "optional:configtree:${SERVICE_BINDING_ROOT}/configuration-properties/"
+  build:
+    env:
+    - name: BP_JVM_VERSION
+      value: "17"
+  params:
+  - name: gitops_ssh_secret
+    value: git-credentials
+  serviceClaims:
+  - name: configuration-properties
+    ref:
+      apiVersion: services.apps.tanzu.vmware.com/v1alpha1
+      kind: ResourceClaim
+      name: acs-seperation-config-claim
+  source:
+    git:
+      ref:
+        branch: main
+      url: https://github.com/timosalm/emoji-inclusion.git

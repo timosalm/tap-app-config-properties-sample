@@ -1,0 +1,38 @@
+apiVersion: "config.apps.tanzu.vmware.com/v1alpha4"
+kind: ConfigurationSource
+metadata:
+  name: acs-seperation-source
+  namespace: tap-app-config-properties
+spec:
+  backends:
+    - type: git
+      uri: https://github.com/timosalm/tap-app-config-properties-sample
+      searchPaths: 
+      - externalized-dev-configuration
+    - type: git
+      uri:  https://github.com/timosalm/tap-app-config-properties-sample-ops-configuration
+      secretRef: 
+        name: git-credentials
+        namespace: tap-app-config-properties
+---
+apiVersion: "config.apps.tanzu.vmware.com/v1alpha4"
+kind: ConfigurationSlice
+metadata:
+  name: acs-seperation-slice
+  namespace: tap-app-config-properties
+spec:
+  configurationSource: acs-seperation-source
+  content:
+  - inclusion/production/default
+---
+apiVersion: services.apps.tanzu.vmware.com/v1alpha1
+kind: ResourceClaim
+metadata:
+  name: acs-seperation-config-claim
+  namespace: tap-app-config-properties
+spec:
+  ref:
+    apiVersion: config.apps.tanzu.vmware.com/v1alpha4
+    kind: ConfigurationSlice
+    name: acs-seperation-slice
+    namespace: tap-app-config-properties

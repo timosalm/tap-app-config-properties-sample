@@ -1,0 +1,8 @@
+apiVersion: services.apps.tanzu.vmware.com/v1alpha1
+kind: ClassClaim
+metadata:
+  name: postgresql
+  namespace: tap-app-config-properties
+spec:
+  classRef:
+    name: postgresql-unmanaged
