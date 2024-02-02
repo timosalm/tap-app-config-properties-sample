@@ -5,22 +5,29 @@ metadata:
     autoscaling.knative.dev/min-scale: "1"
   labels:
     apps.tanzu.vmware.com/workload-type: web
-  name: wkld-db-binding
+    app.kubernetes.io/part-of: inclusion
+    apps.tanzu.vmware.com/auto-configure-actuators: "true"
+  name: db-binding-wkld
   namespace: tap-app-config-properties
 spec:
+  env:
+  - name: SPRING_CONFIG_IMPORT
+    value: "optional:configtree:${SERVICE_BINDING_ROOT}/configuration-properties/"
   build:
     env:
     - name: BP_JVM_VERSION
       value: "17"
-  params:
-  - name: gitops_ssh_secret
-    value: git-credentials
   serviceClaims:
   - name: db
     ref:
       apiVersion: services.apps.tanzu.vmware.com/v1alpha1
       kind: ClassClaim
       name: postgresql
+  - name: configuration-properties
+    ref:
+      apiVersion: services.apps.tanzu.vmware.com/v1alpha1
+      kind: ResourceClaim
+      name: db-binding-config-claim
   source:
     git:
       ref:

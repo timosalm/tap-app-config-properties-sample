@@ -7,12 +7,12 @@ metadata:
     apps.tanzu.vmware.com/workload-type: web
     app.kubernetes.io/part-of: inclusion
     apps.tanzu.vmware.com/auto-configure-actuators: "true"
-  name: acs-seperation-wkld
+  name: external-secret-wkld
   namespace: tap-app-config-properties
 spec:
   env:
   - name: SPRING_CONFIG_IMPORT
-    value: "optional:configtree:${SERVICE_BINDING_ROOT}/configuration-properties/"
+    value: "optional:configtree:${SERVICE_BINDING_ROOT}/configuration-properties/,optional:configtree:${SERVICE_BINDING_ROOT}/external-secret-configuration-properties/"
   build:
     env:
     - name: BP_JVM_VERSION
@@ -22,7 +22,12 @@ spec:
     ref:
       apiVersion: services.apps.tanzu.vmware.com/v1alpha1
       kind: ResourceClaim
-      name: acs-seperation-config-claim
+      name: external-secret-acs-config-claim
+  - name: external-secret-configuration-properties
+    ref:
+      apiVersion: services.apps.tanzu.vmware.com/v1alpha1
+      kind: ResourceClaim
+      name: external-secret-config-claim
   source:
     git:
       ref:

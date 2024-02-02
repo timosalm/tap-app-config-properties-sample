@@ -1,7 +1,7 @@
 apiVersion: "config.apps.tanzu.vmware.com/v1alpha4"
 kind: ConfigurationSource
 metadata:
-  name: acs-seperation-source
+  name: external-secret-source
   namespace: tap-app-config-properties
 spec:
   backends:
@@ -9,19 +9,14 @@ spec:
       uri: https://github.com/timosalm/tap-app-config-properties-sample
       searchPaths: 
       - externalized-dev-configuration
-    - type: git
-      uri:  https://github.com/timosalm/tap-app-config-properties-sample-ops-configuration
-      secretRef: 
-        name: git-credentials
-        namespace: tap-app-config-properties
 ---
 apiVersion: "config.apps.tanzu.vmware.com/v1alpha4"
 kind: ConfigurationSlice
 metadata:
-  name: acs-seperation-slice
+  name: external-secret-slice
   namespace: tap-app-config-properties
 spec:
-  configurationSource: acs-seperation-source
+  configurationSource: external-secret-source
   content:
   - inclusion/production
   - inclusion/default
@@ -29,11 +24,23 @@ spec:
 apiVersion: services.apps.tanzu.vmware.com/v1alpha1
 kind: ResourceClaim
 metadata:
-  name: acs-seperation-config-claim
+  name: external-secret-acs-config-claim
   namespace: tap-app-config-properties
 spec:
   ref:
     apiVersion: config.apps.tanzu.vmware.com/v1alpha4
     kind: ConfigurationSlice
-    name: acs-seperation-slice
+    name: external-secret-slice
+    namespace: tap-app-config-properties
+---
+apiVersion: services.apps.tanzu.vmware.com/v1alpha1
+kind: ResourceClaim
+metadata:
+  name: external-secret-config-claim
+  namespace: tap-app-config-properties
+spec:
+  ref:
+    apiVersion: v1
+    kind: Secret
+    name: external-secret
     namespace: tap-app-config-properties
