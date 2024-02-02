@@ -6,3 +6,5 @@ PRIVATE
 
 ### VS Code ###
 .vscode/
+
+values.yaml

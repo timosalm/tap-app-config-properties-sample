@@ -1,3 +1,5 @@
+#@ load("@ytt:data", "data")
+---
 apiVersion: "config.apps.tanzu.vmware.com/v1alpha4"
 kind: ConfigurationSource
 metadata:
@@ -32,6 +34,46 @@ spec:
     kind: ConfigurationSlice
     name: external-secret-slice
     namespace: tap-app-config-properties
+---
+apiVersion: external-secrets.io/v1beta1
+kind: SecretStore
+metadata:
+  name: tap-app-config-properties-secrets
+  namespace: tap-app-config-properties
+spec:
+  provider:
+    aws:
+      service: SecretsManager
+      region: #@ data.values.external_secret_operator.aws.region
+      auth:
+        jwt:
+          serviceAccountRef:
+            name: tap-app-config-properties-secrets
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  annotations:
+    eks.amazonaws.com/role-arn: <your-role-arn>
+  name: tap-app-config-properties-secrets
+  namespace: tap-app-config-properties
+---
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: external-secret-config
+  namespace: tap-app-config-properties
+spec:
+  secretStoreRef:
+    name: tap-app-config-properties-secrets
+    kind: SecretStore
+  refreshInterval: "1m"
+  target:
+    name: external-secret
+    creationPolicy: Owner
+  dataFrom:
+  - extract:
+      key: #@ data.values.external_secret_operator.secret_key
 ---
 apiVersion: services.apps.tanzu.vmware.com/v1alpha1
 kind: ResourceClaim

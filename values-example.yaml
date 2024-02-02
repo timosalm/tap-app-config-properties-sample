@@ -1,0 +1,9 @@
+ops_git_repo:
+  https_url: https://github.com/.../tap-app-config-properties-sample-ops-configuration
+  username: 
+  password: 
+  encryption_key: tanzu
+external_secret_operator:
+  aws:
+    region: eu-central-1
+  secret_key: dev/tap-run-prod/tap-app-config-properties/inclusion-production

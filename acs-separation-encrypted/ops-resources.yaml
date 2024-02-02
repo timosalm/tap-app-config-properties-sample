@@ -1,3 +1,5 @@
+#@ load("@ytt:data", "data")
+---
 apiVersion: "config.apps.tanzu.vmware.com/v1alpha4"
 kind: ConfigurationSource
 metadata:
@@ -10,7 +12,7 @@ spec:
       searchPaths: 
       - externalized-dev-configuration
     - type: git
-      uri:  https://github.com/timosalm/tap-app-config-properties-sample-ops-configuration
+      uri:  #@ data.values.ops_git_repo.https_url
       defaultLabel: encrypted
       secretRef: 
         name: git-credentials-with-encryption-key
